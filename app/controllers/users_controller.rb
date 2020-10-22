@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-    
+    before_action :authenticate_user, :except => [:new, :create]
 
     def new 
         @user = User.new
@@ -11,19 +11,17 @@ class UsersController < ApplicationController
             session[:user_id] = @user.id
             redirect_to user_path(@user)
         else
-            render 'new'
+            redirect_to root_path
         end
     end
 
     def show
-        # current_user 
-        # binding.pry
-        @user = User.find_by_id(params[:id])
-        binding.pry
-        if  @user == current_user
-            redirect_to user_path(@user)
+        
+        @user = User.find(session[:user_id])
+        if  @user != current_user
+            redirect_to new_users_path
         else 
-            redirect_to '/'
+            render :show
         end
         # binding.pry
     end
